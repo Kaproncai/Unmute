@@ -1,0 +1,11 @@
+
+2017.10.07. Unmute v1.0
+
+- inital release
+- parse every high definition audio device and hda codec
+- find the PCBEEP widget and unmute on every mixer and multiplexer widget
+- also unmute the mixer widgets on other mixer widgets (show the id)
+- find the headphone widget then enable and unmute it
+- find the PC speaker widget then disable and mute it
+- disable the BEEP generator widget
+- two digits command line parameter to set the volume (in percent)
