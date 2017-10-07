@@ -3,7 +3,7 @@
 
 DOS utility which is redirecting the PCBEEP to headphone.
 
-It's usefull for capturing the PC speaker sound from DOS
+It's useful for capturing the PC speaker sound from DOS
 games and demoscene stuff.
 
 ### Requirements
