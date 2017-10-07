@@ -19,7 +19,7 @@ The default is full volume.
 
 ### Author
 
-It was written in FASMD by Tam s Kaproncai aka TomCat/Abaddon.
+It was written in FASMD by Tamás Kaproncai aka TomCat/Abaddon.
 PMODE init code is borrowed from FASMD source by Tomasz Grysztar.
 
 ### Contact
