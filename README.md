@@ -56,13 +56,13 @@ Here is the result of UNMUTE on my PC:
     HDA codec id: 0221, vendor id: 10EC.
     - codec address found at 00000000, first widget id: 002, last widget id: 023.
     - BEEP generator widget id: 001 DISABLED.
-    - PC speaker widget id: 017 MUTED.
-    - headphone widget id: 021 UNMUTED.
-    - PCBEEP widget id: 01D on 0B#4 0C#1 0D#1 0F#1 22 23 UNMUTED.
-    HDA device id: 0FB9, vendor id: 10DE.
-    - i/o base found at F3000000, mapped to 00110000, selector: 0CF.
-    HDA codec id: 0080, vendor id: 10DE.
+    - PC speaker widget id: 017 MUTED.
+    - headphone widget id: 021 UNMUTED.
+    - PCBEEP widget id: 01D on 0B#4 0C#1 0D#1 0F#1 22 23 UNMUTED.
+    HDA device id: 0FB9, vendor id: 10DE.
+    - i/o base found at F3000000, mapped to 00110000, selector: 0CF.
+    HDA codec id: 0080, vendor id: 10DE.
     - codec address found at 00000000, first widget id: 004, last widget id: 00D.
     - BEEP generator widget id: 001 DISABLED.
-    - PCBEEP widget not found.
+    - PCBEEP widget not found.
 
