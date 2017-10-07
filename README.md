@@ -36,22 +36,20 @@ GitHub: Kaproncai
 
 ### Files
 
-UNMUTE.ASM - the main source code
-DOSDPMI - director of DPMI include files
-CHANGES - detailed features
-TESTED - tested CODEC list
-LICENSE - copyright information
-TODO - future plans and dreams
-README.MD - this file
+- UNMUTE.ASM - the main source code
+- DOSDPMI - director of DPMI include files
+- CHANGES - detailed features
+- TESTED - tested CODEC list
+- LICENSE - copyright information
+- TODO - future plans and dreams
+- README.MD - this file
 
 ### Example
 
 Here is the result of UNMUTE on my PC:
 
 > Unmute - PCBEEP to headphone - Written by TomCat/Abaddon - v1.0/2017
-
 > --------------------------------------------------------------------
-
 > HDA mixer volume: 01F.
 > HDA device id: A170, vendor id: 8086.
 > - i/o base found at F3144000, mapped to 00110000, selector: 0C7.
