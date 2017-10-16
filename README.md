@@ -8,8 +8,9 @@ games and demoscene stuff.
 
 ### Requirements
 
-FreeDOS or MS-Dos
-and DPMI DOS extender required (like HDPMI32).
+- FreeDOS or MS-Dos
+- DPMI DOS extender (like HDPMI32)
+- hardware with High Definition Audio codec
 
 ### Usage
 
@@ -37,6 +38,7 @@ GitHub: Kaproncai
 ### Files
 
 - UNMUTE.ASM - the main source code
+- UNMUTE.EXE - compiled version
 - DOSDPMI - director of DPMI include files
 - CHANGES - detailed features
 - TESTED - tested CODEC list
