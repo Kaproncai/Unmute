@@ -34,6 +34,8 @@ GitHub: Kaproncai
 - Realtek ALC221 codec datasheet
 - PCI scan and delay routines from AC97 CDPlayer coded by Dex
 - HDA part of WSS audio library adopted from JUDAS by Khusraw
+- Integrated Device Technology 92HD91 codec datasheet
+- Codec informations from HD-audio emulator by tiwia@github
 
 ### Files
 
