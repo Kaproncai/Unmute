@@ -45,6 +45,7 @@ vol_ok:
  MOV    CL,3
  CALL   print_num_eol
 
+ MOV    WORD [azbar_selector],0 ; selector=0
  MOV    EDI,80000000H
 main_pci:
  MOV    BL,0                    ; read Vendor/Device ID
@@ -68,6 +69,14 @@ next_pci:
  CMP    EDI,80FFF800H
  JNE    main_pci
 
+ CMP    WORD [azbar_selector],0 ; HDA device found?
+ JNE    @F
+
+ MOV    EDX,_no_hda
+ MOV    AH,9
+ INT    21H
+
+@@:
  MOV    AX,4C0FH
  INT    21H
 
@@ -315,7 +324,7 @@ find_generator:
 .2:
  INC    ECX
  CMP    ECX,[last_node_id]
- JNA    .1
+ JBE    .1
  MOV    EDX,_node_generator
  MOV    AH,9
  INT    21H
@@ -345,6 +354,8 @@ find_speaker:
  SHL    EAX,20
  OR     EAX,00F0009H            ; GET_PARAM,WIDGET_CAP
  CALL   read_codec
+ TEST   AH,2                    ; IS_DIGITAL
+ JNZ    .2
  SHR    EAX,20
  AND    AL,0FH                  ; type
  CMP    AL,4                    ; PIN_CMPLX
@@ -355,41 +366,41 @@ find_speaker:
  CALL   read_codec
  TEST   AL,10H                  ; PIN_OUT_CAP
  JZ     .2
+ TEST   AL,28H                  ; PIN_IN_CAP+PIN_HP_CAP
+ JNZ    .2
  MOV    EAX,ECX
  SHL    EAX,20
  OR     EAX,00F1C00H            ; GET_PIN_CFG
  CALL   read_codec
- TEST   EAX,40000000H           ; Port Connectivity
- JNZ    .2                      ; JACK
- SHR    EAX,20
- AND    AL,0FH                  ; pintype
- CMP    AL,1                    ; SPEAKER
- JE     .3
-.2:
- INC    ECX
- CMP    ECX,[last_node_id]
- JNA    .1
- JMP    find_headphone
-.3:
- MOV    [speaker_node_id],ECX
+ TEST   EAX,80000000H           ; conectivity
+ JZ     .2                      ; not fixed
+
+ PUSH   ECX
  MOV    EDX,_node_speaker
  MOV    AH,9
  INT    21H
- MOV    EAX,[speaker_node_id]
+ MOV    EAX,ECX
  MOV    CL,3
  CALL   print_num
+ POP    ECX
 
- MOV    EAX,[speaker_node_id]
+ MOV    EAX,ECX
  SHL    EAX,20
  OR     EAX,003B080H            ; SET_AMP_GAIN,SET_OUT_AMP
  CALL   write_codec             ; muted
- MOV    EAX,[speaker_node_id]
+ MOV    EAX,ECX
  SHL    EAX,20
  OR     EAX,0070700H            ; SET_PIN_CTRL
  CALL   write_codec             ; disabled
+
  MOV    EDX,_muted
  MOV    AH,9
  INT    21H
+
+.2:
+ INC    ECX
+ CMP    ECX,[last_node_id]
+ JBE    .1
 
 ;-------------------------------------------------------
 find_headphone:
@@ -411,67 +422,68 @@ find_headphone:
  JZ     .2
  TEST   AL,08H                  ; PIN_HP_CAP
  JZ     .2
+ TEST   AL,20H                  ; PIN_IN_CAP
+ JNZ    .2
  MOV    EAX,ECX
  SHL    EAX,20
  OR     EAX,00F1C00H            ; GET_PIN_CFG
  CALL   read_codec
-;TEST   EAX,40000000H           ; Port Connectivity
-;JNZ    .2                      ; JACK
  SHR    EAX,20
  AND    AL,0FH                  ; pintype
  CMP    AL,2                    ; HP_OUT
- JE    .3
-.2:
- INC    ECX
- CMP    ECX,[last_node_id]
- JNA    .1
- JMP    find_pcbeep
-.3:
- MOV    [hphone_node_id],ECX
+ JNE   .2
+
+ PUSH   ECX
  MOV    EDX,_node_hphone
  MOV    AH,9
  INT    21H
- MOV    EAX,[hphone_node_id]
+ MOV    EAX,ECX
  MOV    CL,3
  CALL   print_num
+ POP    ECX
 
- MOV    EAX,[hphone_node_id]
+ MOV    EAX,ECX
  SHL    EAX,20
  OR     EAX,003B000H            ; SET_AMP_GAIN,SET_OUT_AMP
  MOV    AL,BYTE [volume]        ; gain
  CALL   write_codec
 
- MOV    EAX,[hphone_node_id]
+ MOV    EAX,ECX
  SHL    EAX,20
  OR     EAX,00707C0H            ; SET_PIN_CTRL,PIN_OUT_ENAB+PIN_HP_ENAB
  CALL   write_codec
 
- MOV    EAX,[hphone_node_id]
+ MOV    EAX,ECX
  SHL    EAX,20
  OR     EAX,0070500H            ; SET_POW_STATE,STATE_D0
  CALL   write_codec
 
-;MOV    EAX,[hphone_node_id]
-;SHL    EAX,20
-;OR     EAX,00F000CH            ; GET_PARAM,PIN_CAP
-;CALL   read_codec
-;TEST   EAX,10000H              ; PIN_EAPD_CAP
-;JZ     .4
-;MOV    EAX,[hphone_node_id]
-;SHL    EAX,20
-;OR     EAX,00F0C00H            ; GET_PIN_EAPDBTL
-;CALL   read_codec
-;XCHG   EDX,EAX
-;MOV    EAX,[hphone_node_id]
-;SHL    EAX,20
-;MOV    AL,DL
-;OR     EAX,0070C02H            ; SET_PIN_EAPDBTL,EAPD_ENABLE
-;CALL   write_codec
-;.4:
+ MOV    EAX,ECX
+ SHL    EAX,20
+ OR     EAX,00F000CH            ; GET_PARAM,PIN_CAP
+ CALL   read_codec
+ TEST   EAX,10000H              ; PIN_EAPD_CAP
+ JZ     .4
+ MOV    EAX,ECX
+ SHL    EAX,20
+ OR     EAX,00F0C00H            ; GET_PIN_EAPDBTL
+ CALL   read_codec
+ XCHG   EDX,EAX
+ MOV    EAX,ECX
+ SHL    EAX,20
+ MOV    AL,DL
+ OR     EAX,0070C02H            ; SET_PIN_EAPDBTL,EAPD_ENABLE
+ CALL   write_codec
+.4:
 
  MOV    EDX,_unmuted
  MOV    AH,9
  INT    21H
+
+.2:
+ INC    ECX
+ CMP    ECX,[last_node_id]
+ JBE    .1
 
 ;-------------------------------------------------------
 find_pcbeep:
@@ -488,10 +500,27 @@ find_pcbeep:
 .2:
  INC    ECX
  CMP    ECX,[last_node_id]
- JNA    .1
+ JBE    .1
+
  MOV    EDX,_no_pcbeep
  MOV    AH,9
  INT    21H
+
+;-------------------------------------------------------
+; IDT codec analog beep enable
+ MOV    EAX,017EE00H            ; SET_ANA_BEEP,Byte1
+ MOV    AL,BYTE [volume]        ; gain
+ AND    AL,18H
+ SHL    AL,1
+ OR     AL,1                    ; Always enabled
+ CALL   write_codec
+ MOV    EAX,017EF00H            ; SET_ANA_BEEP,Byte2
+ MOV    AL,BYTE [volume]        ; gain
+ AND    AL,07H
+ SHL    AL,2
+ OR     AL,3                    ; Quantization enable
+ CALL   write_codec
+
 RETN
 
 pcbeep_found:
@@ -617,7 +646,7 @@ pcbeep_found:
 .8:
  INC    ECX
  CMP    ECX,[last_node_id]
- JNA    .1
+ JBE    .1
 
  MOV    EDX,_unmuted+1
  MOV    AH,9
@@ -715,21 +744,21 @@ RETN
 ; text messages
 
 _welcome DB 'Unmute - PCBEEP to headphone - '
-         DB 'Written by TomCat/Abaddon - v1.0/2017',10,13
+         DB 'Written by TomCat/Abaddon - v1.1/2017',13,10
          DB '-------------------------------'
-         DB '-------------------------------------',10,13
+         DB '-------------------------------------',13,10
          DB 'HDA mixer volume: $'
 _dev_ok DB 'HDA device id: $'
 _vendor DB ', vendor id: $'
-_eol DB '.',10,13,'$'
+_eol DB '.',13,10,'$'
 _io_ok DB '- i/o base found at $'
-_map_fail DB 10,13,'Physical address mapping error.',10,13,'$'
+_map_fail DB 13,10,'Physical address mapping error.',13,10,'$'
 _io_mapped DB ', mapped to $'
-_lock_fail DB 10,13,'Lock linear region error.',10,13,'$'
-_ldt_fail DB 10,13,'Selector allocation error.',10,13,'$'
+_lock_fail DB 13,10,'Lock linear region error.',13,10,'$'
+_ldt_fail DB 13,10,'Selector allocation error.',13,10,'$'
 _ldt_ok DB ', selector: $'
-_reset_fail DB 'Controller not ready.',10,13,'$'
-_codec_fail DB 'No codec found after reset.',10,13,'$'
+_reset_fail DB 'Controller not ready.',13,10,'$'
+_codec_fail DB 'No codec found after reset.',13,10,'$'
 _codec_ok DB 'HDA codec id: $'
 _addr_ok DB '- codec address found at $'
 _node_first DB ', first widget id: $'
@@ -739,10 +768,11 @@ _node_speaker DB '- PC speaker widget id: $'
 _node_hphone DB '- headphone widget id: $'
 _node_pcbeep DB '- PCBEEP widget id: $'
 _on DB ' on $'
-_no_pcbeep DB '- PCBEEP widget not found.',10,13,'$'
-_muted DB ' MUTED.',10,13,'$'
-_unmuted DB ' UNMUTED.',10,13,'$'
-_disabled DB ' DISABLED.',10,13,'$'
+_no_pcbeep DB '- PCBEEP widget not found.',13,10,'$'
+_muted DB ' MUTED.',13,10,'$'
+_unmuted DB ' UNMUTED.',13,10,'$'
+_disabled DB ' DISABLED.',13,10,'$'
+_no_hda DB 'No compatible device found.',13,10,'$'
 
 ;-------------------------------------------------------
 ; variables
@@ -752,8 +782,6 @@ linear_address DD ?
 first_node_id DD ?
 last_node_id DD ?
 pcbeep_node_id DD ?
-hphone_node_id DD ?
-speaker_node_id DD ?
 generator_node_id DD ?
 azbar_selector DW ?
 

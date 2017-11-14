@@ -50,7 +50,7 @@ GitHub: Kaproncai
 
 Here is the result of UNMUTE on my PC:
 
-    Unmute - PCBEEP to headphone - Written by TomCat/Abaddon - v1.0/2017
+    Unmute - PCBEEP to headphone - Written by TomCat/Abaddon - v1.1/2017
     --------------------------------------------------------------------
     HDA mixer volume: 01F.
     HDA device id: A170, vendor id: 8086.
@@ -67,4 +67,3 @@ Here is the result of UNMUTE on my PC:
     - codec address found at 00000000, first widget id: 004, last widget id: 00D.
     - BEEP generator widget id: 001 DISABLED.
     - PCBEEP widget not found.
-

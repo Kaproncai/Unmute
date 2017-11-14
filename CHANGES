@@ -1,7 +1,16 @@
 
+2017.11.14. Unmute v1.1
+
+- new line characters bug fixed, copying the output not a problem anymore
+- additional error meassage when no HDA device found
+- analog PC BEEP enable on IDT codec
+- EAPD enabled on headphone widget
+- better method of searching for PC Speaker and headphone widget
+- executable included
+
 2017.10.07. Unmute v1.0
 
-- inital release
+- initial release
 - parse every high definition audio device and hda codec
 - find the PCBEEP widget and unmute on every mixer and multiplexer widget
 - also unmute the mixer widgets on other mixer widgets (show the id)

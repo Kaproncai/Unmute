@@ -1,6 +1,7 @@
 
-Unmute v1.0 - TODO
+Unmute v1.1 - TODO
 
+- analog beep enable test on IDT 92HD91 and 92HD94 codec
 - test more codec like Realtek ALC888 and Analog Devices AD1988
 - support LONG_CON_LST for connected widgets
 - do the job without analog mixer via PCM stream
