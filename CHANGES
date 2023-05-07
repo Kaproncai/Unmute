@@ -1,4 +1,8 @@
 
+2023.05.07. Unmute v1.2
+
+- Display string with CWSDPMI host bug fixed, custom func instead of DOS#09
+
 2017.11.14. Unmute v1.1
 
 - new line characters bug fixed, copying the output not a problem anymore

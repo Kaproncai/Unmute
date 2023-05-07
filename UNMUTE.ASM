@@ -4,8 +4,7 @@
 INCLUDE 'DOSDPMI\DPMIHEAD.INC'
 
  MOV    EDX,_welcome
- MOV    AH,9
- INT    21H
+ CALL   print_str
 
  MOV    DWORD [volume],1FH
  MOV    ESI,80H
@@ -73,8 +72,7 @@ next_pci:
  JNE    @F
 
  MOV    EDX,_no_hda
- MOV    AH,9
- INT    21H
+ CALL   print_str
 
 @@:
  MOV    AX,4C0FH
@@ -94,22 +92,19 @@ hda_found:
  XCHG   EDI,EAX
 
  MOV    EDX,_dev_ok
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    EAX,ESI
  SHR    EAX,16
  MOV    CL,4
  CALL   print_num
  MOV    EDX,_vendor
- MOV    AH,9
- INT    21H
+ CALL   print_str
  XCHG   EAX,ESI
  MOV    CL,4
  CALL   print_num_eol
 
  MOV    EDX,_io_ok
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    EAX,EDI
  MOV    CL,8
  CALL   print_num
@@ -124,8 +119,7 @@ hda_found:
  JNC    lin_addr_ok
 
  MOV    EDX,_map_fail
- MOV    AH,9
- INT    21H
+ CALL   print_str
  RETN
 
 lin_addr_ok:
@@ -134,8 +128,7 @@ lin_addr_ok:
  MOV    [linear_address],EBX
 
  MOV    EDX,_io_mapped
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    EAX,[linear_address]
  MOV    CL,8
  CALL   print_num
@@ -150,8 +143,7 @@ lin_addr_ok:
  JNC    lock_region_ok
 
  MOV    EDX,_lock_fail
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    ECX,[linear_address]
  MOV    EBX,ECX
  SHR    EBX,16
@@ -186,14 +178,12 @@ lock_region_ok:
 
 allocation_fail:
  MOV    EDX,_ldt_fail
- MOV    AH,9
- INT    21H
+ CALL   print_str
  JMP    hda_exit
 
 selector_ok:
  MOV    EDX,_ldt_ok
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    AX,[azbar_selector]
  MOV    CL,3
  CALL   print_num_eol
@@ -218,8 +208,7 @@ selector_ok:
  CMP    [FS:ESI],ECX
  JNZ    reset_ok
  MOV    EDX,_reset_fail
- MOV    AH,9
- INT    21H
+ CALL   print_str
  JMP    hda_exit
 
 reset_ok:
@@ -228,8 +217,7 @@ reset_ok:
  TEST   AX,AX
  JNZ    codec_ok
  MOV    EDX,_codec_fail
- MOV    AH,9
- INT    21H
+ CALL   print_str
  JMP    hda_exit
 
 codec_ok:
@@ -263,31 +251,27 @@ RETN
 ;-------------------------------------------------------
 codec_found:
  MOV    EDX,_codec_ok
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    EAX,00F0000H            ; GET_PARAM,VENDOR_ID
  CALL   read_codec
  MOV    ESI,EAX
  MOV    CL,4
  CALL   print_num
  MOV    EDX,_vendor
- MOV    AH,9
- INT    21H
+ CALL   print_str
  XCHG   EAX,ESI
  SHR    EAX,16
  MOV    CL,4
  CALL   print_num_eol
  MOV    EDX,_addr_ok
- MOV    AH,9
- INT    21H
+ CALL   print_str
 
  MOV    EAX,EBP
  MOV    CL,8
  CALL   print_num
 
  MOV    EDX,_node_first
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    EAX,01F0004H            ; GET_PARAM,NODE_CNT
  CALL   read_codec
  SUB    EDX,EDX
@@ -301,8 +285,7 @@ codec_found:
  MOV    CL,3
  CALL   print_num
  MOV    EDX,_node_last
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    EAX,[last_node_id]
  MOV    CL,3
  CALL   print_num_eol
@@ -326,8 +309,7 @@ find_generator:
  CMP    ECX,[last_node_id]
  JBE    .1
  MOV    EDX,_node_generator
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    EAX,[generator_node_id]
  MOV    CL,3
  CALL   print_num
@@ -343,8 +325,7 @@ find_generator:
  CALL   write_codec
 
  MOV    EDX,_disabled
- MOV    AH,9
- INT    21H
+ CALL   print_str
 
 ;-------------------------------------------------------
 find_speaker:
@@ -377,8 +358,7 @@ find_speaker:
 
  PUSH   ECX
  MOV    EDX,_node_speaker
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    EAX,ECX
  MOV    CL,3
  CALL   print_num
@@ -394,8 +374,7 @@ find_speaker:
  CALL   write_codec             ; disabled
 
  MOV    EDX,_muted
- MOV    AH,9
- INT    21H
+ CALL   print_str
 
 .2:
  INC    ECX
@@ -435,8 +414,7 @@ find_headphone:
 
  PUSH   ECX
  MOV    EDX,_node_hphone
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    EAX,ECX
  MOV    CL,3
  CALL   print_num
@@ -477,8 +455,7 @@ find_headphone:
 .4:
 
  MOV    EDX,_unmuted
- MOV    AH,9
- INT    21H
+ CALL   print_str
 
 .2:
  INC    ECX
@@ -503,8 +480,7 @@ find_pcbeep:
  JBE    .1
 
  MOV    EDX,_no_pcbeep
- MOV    AH,9
- INT    21H
+ CALL   print_str
 
 ;-------------------------------------------------------
 ; IDT codec analog beep enable
@@ -526,14 +502,12 @@ RETN
 pcbeep_found:
  MOV    [pcbeep_node_id],ECX
  MOV    EDX,_node_pcbeep
- MOV    AH,9
- INT    21H
+ CALL   print_str
  MOV    EAX,[pcbeep_node_id]
  MOV    CL,3
  CALL   print_num
  MOV    EDX,_on
- MOV    AH,9
- INT    21H
+ CALL   print_str
 
  MOV    ECX,[first_node_id]
 .1:
@@ -649,8 +623,7 @@ pcbeep_found:
  JBE    .1
 
  MOV    EDX,_unmuted+1
- MOV    AH,9
- INT    21H
+ CALL   print_str
 
 RETN
 
@@ -711,8 +684,7 @@ RETN
 print_num_eol:
  CALL   print_num
  MOV    EDX,_eol
- MOV    AH,9
- INT    21H
+ CALL   print_str
 RETN
 
 print_num:
@@ -740,11 +712,24 @@ print_num:
  LOOP   .3
 RETN
 
+print_str:
+ PUSH   ESI
+ MOV    ESI,EDX
+.1:
+ MOV    DL,[ESI]
+ INC    ESI
+ MOV    AH,2
+ INT    21H
+ CMP    BYTE [ESI],'$'
+ JNE    .1
+ POP    ESI
+RETN
+
 ;-------------------------------------------------------
 ; text messages
 
 _welcome DB 'Unmute - PCBEEP to headphone - '
-         DB 'Written by TomCat/Abaddon - v1.1/2017',13,10
+         DB 'Written by TomCat/Abaddon - v1.2/2023',13,10
          DB '-------------------------------'
          DB '-------------------------------------',13,10
          DB 'HDA mixer volume: $'
