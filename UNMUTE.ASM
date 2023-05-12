@@ -262,6 +262,7 @@ codec_found:
  XCHG   EAX,ESI
  SHR    EAX,16
  MOV    CL,4
+ PUSH   EAX
  CALL   print_num_eol
  MOV    EDX,_addr_ok
  CALL   print_str
@@ -289,6 +290,56 @@ codec_found:
  MOV    EAX,[last_node_id]
  MOV    CL,3
  CALL   print_num_eol
+
+ POP    EAX
+ CMP    AX,10ECH                ; Realtek codec
+ JNE    .1
+;-------------------------------------------------------
+; Set Realtek hidden PCBEEP register.
+ MOV    EDX,_fix_realtek
+ CALL   print_str
+
+ MOV    EAX,2050036H            ; SET_COEF_INDEX
+ CALL   write_codec
+ MOV    EAX,20C0000H            ; GET_PROC_COEF
+ CALL   read_codec
+ MOV    CL,4
+ CALL   print_num
+
+ MOV    EAX,2050036H            ; SET_COEF_INDEX
+ CALL   write_codec
+ MOV    EAX,2040707H            ; SET_PROC_COEF
+ CALL   write_codec
+
+ MOV    EDX,_unmuted
+ CALL   print_str
+ JMP    find_generator
+.1:
+
+ CMP    AX,111DH                ; IDT codec
+ JNE    .2
+;-------------------------------------------------------
+; IDT codec analog beep enable
+ MOV    EDX,_fix_idt
+ CALL   print_str
+
+ MOV    EAX,017EE00H            ; SET_ANA_BEEP,Byte1
+ MOV    AL,BYTE [volume]        ; gain
+ AND    AL,18H
+ SHL    AL,1
+ OR     AL,1                    ; Always enabled
+ CALL   write_codec
+ MOV    EAX,017EF00H            ; SET_ANA_BEEP,Byte2
+ MOV    AL,BYTE [volume]        ; gain
+ AND    AL,07H
+ SHL    AL,2
+ OR     AL,3                    ; Quantization enable
+ CALL   write_codec
+
+ MOV    EDX,_unmuted
+ CALL   print_str
+;JMP    find_generator
+.2:
 
 ;-------------------------------------------------------
 find_generator:
@@ -482,21 +533,6 @@ find_pcbeep:
  MOV    EDX,_no_pcbeep
  CALL   print_str
 
-;-------------------------------------------------------
-; IDT codec analog beep enable
- MOV    EAX,017EE00H            ; SET_ANA_BEEP,Byte1
- MOV    AL,BYTE [volume]        ; gain
- AND    AL,18H
- SHL    AL,1
- OR     AL,1                    ; Always enabled
- CALL   write_codec
- MOV    EAX,017EF00H            ; SET_ANA_BEEP,Byte2
- MOV    AL,BYTE [volume]        ; gain
- AND    AL,07H
- SHL    AL,2
- OR     AL,3                    ; Quantization enable
- CALL   write_codec
-
 RETN
 
 pcbeep_found:
@@ -520,6 +556,7 @@ pcbeep_found:
 
  CMP    AL,2                    ; MIXER
  JNE    .5
+
  MOV    EAX,ECX
  SHL    EAX,20
  OR     EAX,00F000EH            ; GET_PARAM,CON_LIST
@@ -729,7 +766,7 @@ RETN
 ; text messages
 
 _welcome DB 'Unmute - PCBEEP to headphone - '
-         DB 'Written by TomCat/Abaddon - v1.2/2023',13,10
+         DB 'Written by TomCat/Abaddon - v1.3/2023',13,10
          DB '-------------------------------'
          DB '-------------------------------------',13,10
          DB 'HDA mixer volume: $'
@@ -754,6 +791,8 @@ _node_hphone DB '- headphone widget id: $'
 _node_pcbeep DB '- PCBEEP widget id: $'
 _on DB ' on $'
 _no_pcbeep DB '- PCBEEP widget not found.',13,10,'$'
+_fix_realtek DB '- Realtek PC Beep Hidden Register: $'
+_fix_idt DB '- IDT analog beep: $'
 _muted DB ' MUTED.',13,10,'$'
 _unmuted DB ' UNMUTED.',13,10,'$'
 _disabled DB ' DISABLED.',13,10,'$'

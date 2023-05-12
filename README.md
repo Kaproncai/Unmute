@@ -35,7 +35,8 @@ GitHub: Kaproncai
 - PCI scan and delay routines from AC97 CDPlayer coded by Dex
 - HDA part of WSS audio library adopted from JUDAS by Khusraw
 - Integrated Device Technology 92HD91 codec datasheet
-- Codec informations from HD-audio emulator by tiwia@github
+- Codec informations from HD-audio emulator by tiwai@github
+- Realtek PC Beep Hidden Register from kernel.org/doc
 
 ### Files
 
@@ -52,20 +53,19 @@ GitHub: Kaproncai
 
 Here is the result of UNMUTE on my PC:
 
-    Unmute - PCBEEP to headphone - Written by TomCat/Abaddon - v1.1/2017
+    Unmute - PCBEEP to headphone - Written by TomCat/Abaddon - v1.3/2023
     --------------------------------------------------------------------
     HDA mixer volume: 01F.
-    HDA device id: A170, vendor id: 8086.
-    - i/o base found at F3144000, mapped to 00110000, selector: 0C7.
-    HDA codec id: 0221, vendor id: 10EC.
-    - codec address found at 00000000, first widget id: 002, last widget id: 023.
+    HDA device id: 9D71, vendor id: 8086.
+    - i/o base found at D1328000, mapped to 00111000, selector: 0C7.
+    HDA codec id: 0256, vendor id: 10EC.
+    - codec address found at 00000000, first widget id: 002, last widget id: 024.
+    - Realtek PC Beep Hidden Register: 7717 UNMUTED.
     - BEEP generator widget id: 001 DISABLED.
-    - PC speaker widget id: 017 MUTED.
+    - PC speaker widget id: 014 MUTED.
     - headphone widget id: 021 UNMUTED.
-    - PCBEEP widget id: 01D on 0B#4 0C#1 0D#1 0F#1 22 23 UNMUTED.
-    HDA device id: 0FB9, vendor id: 10DE.
-    - i/o base found at F3000000, mapped to 00110000, selector: 0CF.
-    HDA codec id: 0080, vendor id: 10DE.
-    - codec address found at 00000000, first widget id: 004, last widget id: 00D.
+    - PCBEEP widget id: 01D on 22#4 23#4 UNMUTED.
+    HDA codec id: 280B, vendor id: 8086.
+    - codec address found at 20000000, first widget id: 002, last widget id: 003.
     - BEEP generator widget id: 001 DISABLED.
     - PCBEEP widget not found.

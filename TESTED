@@ -1,11 +1,12 @@
 
-Unmute v1.1 - CODEC tests
+Unmute v1.3 - CODEC tests
 
-10EC:0221 ok (ALC221)
-10EC:0255 ok (ALC3234)
-10EC:0256 fail (ALC3246)
-10EC:0280 ok (ALC3220)
-10EC:0282 ok (ALC3221)
-10EC:0292 ok (ALC3226)
-14F1:50A1 fail (CX20641)
+10EC:0221 ok (Realtek ALC221)
+10EC:0255 ok (Realtek ALC3234)
+10EC:0256 ok (Realtek ALC3246)
+10EC:0257 ok (Realtek ALC257)
+10EC:0280 ok (Realtek ALC3220)
+10EC:0292 ok (Realtek ALC3226)
+111D:76D1 ok (IDT 92HD87B1/3)
+14F1:50A1 fail (Conexant CX20641)
                        
